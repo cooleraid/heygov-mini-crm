@@ -4,7 +4,7 @@
   "description": "mini CRM to manage contacts",
   "main": "src/server.js",
   "scripts": {
-    "start": "npm run migrate && cross-env NODE_ENV=production node src/server.js",
+    "start": "NODE_ENV=production node src/server.js",
     "dev": "cross-env NODE_ENV=development nodemon --verbose",
     "test": "npm run lint --silent",
     "lint": "eslint --ignore-path .gitignore --ext .js src/",
