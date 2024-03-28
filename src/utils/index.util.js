@@ -8,7 +8,7 @@ const pagination = async ({ Model, conditions, search, search_fields, page, limi
   page = page || 1;
   limit = limit || 10;
   sort_by = sort_by || 'id';
-  sort_dir = sort_dir || 'ASC';
+  sort_dir = sort_dir || 'DESC';
   if (conditions) conditions = _.omitBy(conditions, value => value === '');
   let data = Model;
   data = data
@@ -43,4 +43,12 @@ const validateEnv = () => {
   });
 };
 
-module.exports = { pagination, validateEnv };
+const checkJsonArrayField = (data, field) => {
+  try {
+    return Array.isArray(data) && _.some(data, obj => _.has(obj, field));
+  } catch (error) {
+    return false;
+  }
+}
+
+module.exports = { pagination, validateEnv, checkJsonArrayField };

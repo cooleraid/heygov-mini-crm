@@ -9,4 +9,6 @@ module.exports = {
   DATABASE_USER,
   DATABASE_PASSWORD,
   DATABASE_NAME,
+  OPENAI_API_KEY,
+  ANTHROPIC_API_KEY
 } = process.env;
