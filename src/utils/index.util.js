@@ -1,12 +1,10 @@
 const _ = require('lodash');
 const { cleanEnv, port, str } = require('envalid');
 
-const pagination = async ({ Model, conditions, search, search_fields, page, limit, sort_by, sort_dir }) => {
+const queryFilter = async ({ Model, conditions, search, search_fields, sort_by, sort_dir }) => {
   conditions = conditions || {};
   search = search || '';
   search_fields = search_fields || '';
-  page = page || 1;
-  limit = limit || 10;
   sort_by = sort_by || 'id';
   sort_dir = sort_dir || 'DESC';
   if (conditions) conditions = _.omitBy(conditions, value => value === '');
@@ -17,8 +15,7 @@ const pagination = async ({ Model, conditions, search, search_fields, page, limi
         builder.whereIn(key, conditions[key].split(','));
       }
     })
-    .orderBy(sort_by, sort_dir)
-    .page(page > 0 ? page - 1 : 0, limit);
+    .orderBy(sort_by, sort_dir);
   const split_search_fields = search_fields.split(',');
   if (split_search_fields.length > 0 && search) {
     data = data.where(builder => {
@@ -33,7 +30,7 @@ const pagination = async ({ Model, conditions, search, search_fields, page, limi
     });
   }
   data = await data;
-  return { data: data.results, meta: { records: data.total, page, pages: Math.ceil(Number(data.total) / Number(limit)), page_size: limit } };
+  return { data };
 };
 
 const validateEnv = () => {
@@ -45,10 +42,10 @@ const validateEnv = () => {
 
 const checkJsonArrayField = (data, field) => {
   try {
-    return Array.isArray(data) && _.some(data, obj => _.has(obj, field));
+    return Array.isArray(data) && _.some(data, obj => _.has(obj, field) && obj[field]);
   } catch (error) {
     return false;
   }
 }
 
-module.exports = { pagination, validateEnv, checkJsonArrayField };
+module.exports = { queryFilter, validateEnv, checkJsonArrayField };

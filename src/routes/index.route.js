@@ -12,11 +12,11 @@ router.post("/contacts", celebrate({
     data: Joi.alternatives().conditional('type', {
       is: settings.contacts.type.manual,
       then: Joi.object({
-        email: Joi.string().email(),
+        email: Joi.string().email().allow(''),
         name: Joi.when('email', { is: '', then: Joi.string(), otherwise: Joi.string().allow('') }),
-        company: Joi.string().default(''),
-        phone: Joi.string().default(''),
-        address: Joi.string().default('')
+        company: Joi.string().default('').allow(''),
+        phone: Joi.string().default('').allow(''),
+        address: Joi.string().default('').allow(''),
       }).or('name', 'email'),
       otherwise: Joi.object({
         prompt: Joi.string().required()

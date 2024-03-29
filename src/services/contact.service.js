@@ -3,7 +3,7 @@ const Contact = require('../models/contact.model');
 const HttpException = require('../exceptions/http.exception');
 const { createChatCompletion } = require('../apis/openai');
 const { createMessages } = require('../apis/anthropic');
-const { checkJsonArrayField, pagination } = require('../utils/index.util');
+const { checkJsonArrayField, queryFilter } = require('../utils/index.util');
 
 class ContactService {
   async handleCreateContact(client_id, data) {
@@ -27,14 +27,14 @@ class ContactService {
 
   async extractAIContactData(payload) {
     let extract = await this.handleOpenAIContactExtraction(payload);
-    if (extract.matches?.length < 0) {
-      if ((checkJsonArrayField(extract.matches), 'name') || (checkJsonArrayField(extract.matches), 'email'))
+    if (extract.matches?.length > 0) {
+      if (checkJsonArrayField(extract.matches, 'name') || checkJsonArrayField(extract.matches, 'email'))
         return extract?.matches;
     }
     extract = await this.handleAnthropicContactExtraction(payload);
-    
+
     if (extract.matches?.length > 0) {
-      if ((checkJsonArrayField(extract.matches), 'name') || (checkJsonArrayField(extract.matches), 'email'))
+      if (checkJsonArrayField(extract.matches, 'name') || checkJsonArrayField(extract.matches, 'email'))
         return extract?.matches;
     }
     throw new HttpException(400, `Could not extract the contact information from prompt`);
@@ -103,25 +103,25 @@ class ContactService {
       messages: [
         { role: 'user', content: payload.prompt },
       ],
-      system: `Extract the following contact information from the provided text: name, email, phone, company, address. You must return the response in JSON array and in this format {"matches":[{"name":"","email":"","phone":"","address":"","company":""}]}.`,
+      system: `Extract the following contact information from the provided text: 
+      name, email, phone, company, address. You must return the response in JSON array 
+      and in this format {"matches":[{"name":"","email":"","phone":"","address":"","company":""}]}. 
+      Don't send side text. It must always be a stringified JSON.`,
     });
 
     return JSON.parse(response || '{"matches":[]}');
   }
 
-
   async handleFetchContacts(client_id, filter, conditions) {
     const {
       sort_by = 'id',
       sort_dir = 'DESC',
-      limit = 10,
-      page = 1,
       search = '',
       search_fields = '',
     } = filter;
     const query = Contact.query().where({ client_id });
-    const { data, meta } = await pagination({ Model: query, conditions, search, search_fields, page, limit, sort_by, sort_dir });
-    return { data, meta };
+    const { data } = await queryFilter({ Model: query, conditions, search, search_fields, sort_by, sort_dir });
+    return { data };
   }
 
   async handleFetchContact(client_id, query) {

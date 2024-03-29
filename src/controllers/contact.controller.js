@@ -30,7 +30,7 @@ class ContactController {
     try {
       const { id } = req.params;
       const contact = await this.contactService.handleFetchContact(req.client.id, { id });
-      res.status(200).json({ status: 'success', message: 'success', data: contact });
+      res.status(200).json({ status: 'success', message: 'Contact fetched successfully', data: contact });
     } catch (error) {
       next(error);
     }
