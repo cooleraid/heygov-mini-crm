@@ -1,7 +1,7 @@
 
 # HeyGov (Backend)
 
-HeyGov Mini CRM provides an easy way to quickly add contacts & easily manage or find existing ones.
+HeyGov Mini CRM provides an easy way to quickly add contacts & easily manage or find existing ones. The backend is integrated into OpenAI and Anthropic to extract contact information from the text provided by the user. The backend first attempts to use OpenAI function calling logic to extract the information. If this goes wrong, it falls back to Anthropic.
 
 ## Requirements
 1. Mac OS (feel free to use any OS).
@@ -26,5 +26,5 @@ npm run dev
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-## License
-[MIT](https://link)
+## Documentation
+The APIs are documented in Postman. Here's a public link to the [documentation](https://documenter.getpostman.com/view/2943325/2sA35G2MN9)
